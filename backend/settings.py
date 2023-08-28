@@ -125,13 +125,13 @@ DATABASES = {
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 CORS_ORIGIN_WHITELIST = [
-    "https://localhost:3000",
-    "https://localhost:8000",
+    "http://localhost:3000",
+    "http://localhost:8000",
 ]
 
 CSRF_TRUSTED_ORIGIN = [
-    "https://localhost:3000",
-    "htpps://localhost:8000",
+    "http://localhost:3000",
+    "htpp://localhost:8000",
 ]
 
 # Password validation

@@ -25,7 +25,7 @@ class Post(models.Model):
     description = models.TextField()
     author = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
-    published = models.DateTimeField()
+    published = models.DateField()
     status = models.CharField(max_length=10, choices=options, default='draft')
 
     objects = models.Manager()
