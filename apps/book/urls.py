@@ -6,4 +6,6 @@ urlpatterns = [
     path('category/<category_id>', BookListCategoryView.as_view()),
     path('<post_slug>', PostDetailView.as_view()),
     path('search/<str:search_term>', SearchBookView.as_view()),
+    path('addbook/', AddBook.as_view()),
+    path('register/', RegisterUser.as_view()),
 ]

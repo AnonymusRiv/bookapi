@@ -6,7 +6,7 @@ const FullWidtheLayout = ({children}) => {
     return(
         <>
         <Navbar/>
-        {children}
+            {children}
         <Footer/>
         </>
     )

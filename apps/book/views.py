@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from apps.category.models import Category
 
 from rest_framework.views import APIView
@@ -6,10 +6,16 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 
 from django.db.models.query_utils import Q
+from django.contrib.auth.models import User
+from django.contrib.auth import login, logout
+
+from django.contrib.auth import authenticate
+from django.db import IntegrityError
 
 from .models import Post
 from .serializers import PostSerializer
 from .pagination import SmallSetPagination, MediumSetPagination, LargeSetPagination
+import json
 
 # Create your views here.
 class BookListView(APIView):
@@ -63,3 +69,48 @@ class SearchBookView(APIView):
         serializer = PostSerializer(results, many=True)
 
         return Response({'filtered_posts': serializer.data}, status=status.HTTP_200_OK)
+
+class AddBook(APIView):
+    def post(self, request, format=None):
+        serializer = PostSerializer(data = request.data)
+        print(serializer)
+        """if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)"""
+
+class RegisterUser(APIView):
+    def post(self, request, format=None):
+        body = json.loads(request.body)
+        
+        email = body.get('email')
+        username = body.get('username')
+        first_name = body.get('firstname')
+        last_name = body.get('lastname')
+        password = body.get('password')
+        
+        user = User.objects.create_user(email=email, username=username, first_name=first_name, last_name=last_name, password=password)
+
+        if not email or not username or not password:
+            return Response({'error': 'Email, username, and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar si el correo electrónico ya está en uso
+        if User.objects.filter(email=email).exists():
+            return Response({'error': 'Email is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Crear el usuario
+        try:
+            user = User.objects.create_user(email=email, username=username, first_name=first_name, last_name=last_name, password=password)
+        except IntegrityError:
+            return Response({'error': 'Username is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user is not None:
+            # Autenticar al usuario
+            auth_user = authenticate(username=username, password=password)
+            if auth_user:
+                login(request, auth_user)
+                return Response({'user_create': auth_user.id}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'error': 'Failed to create user.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

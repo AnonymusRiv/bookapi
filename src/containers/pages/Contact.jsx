@@ -1,13 +1,13 @@
 import FullWidthLayout from "hocs/layouts/FullWidthLayout";
 import { connect } from "react-redux";
-import HomePage from "components/Home/HomePage";
+import Contact from "components/Others/Contact";
 
 function Home({
 }){
 
     return(
         <FullWidthLayout>
-            <HomePage/>
+            <Contact/>
         </FullWidthLayout>
     )
 }

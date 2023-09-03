@@ -4,22 +4,30 @@ import { SearchIcon } from '@heroicons/react/solid'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import { NavLink } from 'react-router-dom'
 
+{/*
 const user = {
     name: 'Chelsea Hagon',
     email: 'chelsea.hagon@example.com',
     imageUrl:
         'https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
+*/}
 
 const navigation = [
-    { name: 'Book', href: '/book', current: true },
     { name: 'About', href: '/about', current: false },
     { name: 'Contact', href: '/contact', current: false },
+    { name: 'Sign In', href: '/signin', current: false },
 ]
-const userNavigation = [
+{/*const userNavigation = [
     { name: 'Your Profile', href: '#' },
     { name: 'Settings', href: '#' },
     { name: 'Sign out', href: '#' },
+]*/}
+
+const books = [
+  { name: 'View Books', href: '/book'},
+  { name: 'View Categories', href: '/book/categories'},
+  { name: 'Add Book', href: '/addbook'},
 ]
 
 function classNames(...classes) {
@@ -105,21 +113,19 @@ function Navbar(){
                 </div>
 
                 <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                  {/*
-                  <a
+                  
+                  {/*<a
                     href="#"
                     className="ml-5 flex-shrink-0 bg-white rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     <span className="sr-only">View notifications</span>
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </a>
-
-                  {/* Profile dropdown
+                    </a>*/}
                   <Menu as="div" className="flex-shrink-0 relative ml-5">
                     <div>
-                      <Menu.Button className="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <span className="sr-only">Open user menu</span>
-                        <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
+                      <Menu.Button className="text-lg dark:hover:text-white hover:text-gray-900 text-gray-600 dark:text-dark-txt text-md font-semibold">
+                        <span className="sr-only">Open book menu</span>
+                        Books
                       </Menu.Button>
                     </div>
                     <Transition
@@ -132,42 +138,34 @@ function Navbar(){
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="origin-top-right absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none">
-                        {userNavigation.map((item) => (
+                        {books.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
-                              <a
-                                href={item.href}
+                              <NavLink
+                                to={item.href}
                                 className={classNames(
                                   active ? 'bg-gray-100' : '',
                                   'block py-2 px-4 text-sm text-gray-700'
                                 )}
                               >
                                 {item.name}
-                              </a>
+                              </NavLink>
                             )}
                           </Menu.Item>
                         ))}
                       </Menu.Items>
                     </Transition>
                   </Menu>
-
-                  <a
-                    href="#"
-                    className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    New Project
-                  </a>
-
-                */}
-                
-                  <NavLink to="/book" className="text-lg dark:hover:text-white hover:text-gray-900 text-gray-600 dark:text-dark-txt text-md font-semibold">
-                        Book
-                  </NavLink>
+                  
                   <NavLink to="/about" className="mx-4 text-lg dark:hover:text-white hover:text-gray-900 text-gray-600 dark:text-dark-txt text-md font-semibold">
                         About
                   </NavLink>
                   <NavLink to="/contact" className="text-lg dark:hover:text-white hover:text-gray-900 text-gray-600 dark:text-dark-txt text-md font-semibold">
                         Contact
+                  </NavLink>
+
+                  <NavLink to="/signin" className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Sign In
                   </NavLink>
 
                 </div>
@@ -176,6 +174,41 @@ function Navbar(){
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
               <div className="max-w-3xl mx-auto px-2 pt-2 pb-3 space-y-1 sm:px-4">
+                  <Menu as="div" className="flex-shrink-0">
+                    <div>
+                      <Menu.Button className='block rounded-md py-2 px-3 text-base font-medium'>
+                        <span className="sr-only">Open book menu</span>
+                        Books
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className='block py-2 px-4 text-sm text-gray-700'>
+                        {books.map((item) => (
+                          <Menu.Item key={item.name}>
+                            {({ active }) => (
+                              <NavLink
+                                to={item.href}
+                                className={classNames(
+                                  item.current ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50',
+                                  'block rounded-md py-2 px-3 text-base font-medium'
+                                )}
+                              >
+                                {item.name}
+                              </NavLink>
+                            )}
+                          </Menu.Item>
+                        ))}
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 {navigation.map((item) => (
                   <NavLink
                     key={item.name}

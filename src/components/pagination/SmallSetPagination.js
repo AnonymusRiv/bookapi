@@ -25,7 +25,7 @@ function SmallSetPagination({get_book_list_page, book_list, count}){
 
     const next_number = () => {
       //window.scrollTo(0, 0);
-      if (currentPage !== Math.ceil(book_list.lenght/3)){
+      if (currentPage !== Math.ceil(count / listingPerPage)){
         setCurrentPage(currentPage+1);
         setActive(currentPage+1);
         get_book_list_page(currentPage+1)

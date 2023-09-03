@@ -1,13 +1,13 @@
+import RegisterUSer from "components/user/RegisterUser";
 import FullWidthLayout from "hocs/layouts/FullWidthLayout";
 import { connect } from "react-redux";
-import HomePage from "components/Home/HomePage";
 
-function Home({
+function RegisterForm({
 }){
 
     return(
         <FullWidthLayout>
-            <HomePage/>
+            <RegisterUSer/>
         </FullWidthLayout>
     )
 }
@@ -16,4 +16,4 @@ const mapStateToProps = state =>({
 })
 
 export default connect(mapStateToProps,{
-})(Home)
+})(RegisterForm)
