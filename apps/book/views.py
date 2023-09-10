@@ -88,8 +88,6 @@ class RegisterUser(APIView):
         first_name = body.get('firstname')
         last_name = body.get('lastname')
         password = body.get('password')
-        
-        user = User.objects.create_user(email=email, username=username, first_name=first_name, last_name=last_name, password=password)
 
         if not email or not username or not password:
             return Response({'error': 'Email, username, and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -114,3 +112,24 @@ class RegisterUser(APIView):
                 return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'error': 'Failed to create user.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SignInUser(APIView):
+    def post(self, request, format=None):
+        body = json.loads(request.body)
+
+        username = body.get('username')
+        password = body.get('password')
+
+        auth_user = authenticate(username=username, password=password)
+        if auth_user:
+            login(request, auth_user)
+            return Response({'user_signin': auth_user.id}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class IsUser(APIView):
+    def post(self, request, format=None):
+        if request.user.is_authenticated:
+            return Response({'user': request.user.id}, status=status.HTTP_200_OK)
+        else:
+            return Response({'no user': 'no user founud'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

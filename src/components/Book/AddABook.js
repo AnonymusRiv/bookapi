@@ -3,6 +3,7 @@ import LoadingCard from "components/loaders/LoadingCard"
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { get_categories } from "redux/actions/categories"
+import { Link } from "react-router-dom";
 
 function AddABook({get_categories, categories}){
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -17,30 +18,10 @@ function AddABook({get_categories, categories}){
         get_categories()
     },[])
 
-    const [formData, setFromData] = useState({
-        title: "",
-        description: "",
-        author: "",
-        category: "",
-        published: "",
-        thumbnail: null,
-    });
-
-    const handleChange = (event) =>{
-        const {name, value} = event.target;
-        setFromData({
-            ...formData,
-            [name]: value,
-        });
-    }
-
     const handleThumbnailChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            setFromData({
-                ...formData,
-                thumbnail: file,
-            });
+            setThumbnail(file)
 
             const reader = new FileReader();
             reader.onload = () => {
@@ -54,10 +35,7 @@ function AddABook({get_categories, categories}){
         event.preventDefault();
         const file = event.dataTransfer.files[0];
         if (file) {
-            setFromData({
-                ...formData,
-                thumbnail: file,
-            });
+            setThumbnail(file)
     
             const reader = new FileReader();
             reader.onload = () => {
@@ -68,31 +46,38 @@ function AddABook({get_categories, categories}){
     };
 
     const handleRemoveThumbnail = () => {
-        setFromData({
-            ...formData,
-            thumbnail: null,
-        });
+        setThumbnail(null)
         setThumbnailPreview(null);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        const dataSend = new FormData();
-        dataSend.append("title", formData.title);
-        dataSend.append("description", formData.description);
-        dataSend.append("author", formData.author);
-        dataSend.append("category", formData.category);
-        dataSend.append("published", formData.published);
-        dataSend.append("thumbnail", formData.thumbnail);
-
         try{
-            const response = await axios.post("http://localhost:8000/api/book/addbook/", dataSend)
-            setTimeout(() => window.location.href=('/book/', 200));
-        } catch (error) {
-            console.error("Error: ", error);
+            const response = await axios.post("http://localhost:8000/api/book/addbook/", {
+                title,
+                description,
+                author,
+                category,
+                published,
+                thumbnail,
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.user_create) {
+                    // Redirige al usuario a la página de inicio después del registro exitoso
+                    // o a cualquier otra página que desees.
+                    return (
+                        <Link to="/">Redireccionando a la página de inicio...</Link>
+                    );
+                }
+            }
+        }
+        catch (error){
+            console.log(error)
         }
     };
+
 
     return(
         <form className="mx-4 md:mx-auto md:max-w-2xl">
@@ -220,6 +205,7 @@ function AddABook({get_categories, categories}){
                         className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                         placeholder="author"
                         value={author}
+                        onChange={({target}) => setAuthor(target.value)}
                     />
                     </div>
                 </div>
@@ -239,7 +225,7 @@ function AddABook({get_categories, categories}){
                     >
                         <option value="" className="text-gray-900">Select a category</option>
                         {categories ? categories.map(category => (
-                            <option key={category.id} value={category.id}>
+                            <option key={category.id} value={category.id} onChange={({target}) => setCategory(target.value)}>
                                 {category.name}
                             </option>
                         ))
@@ -271,6 +257,7 @@ function AddABook({get_categories, categories}){
                         autoComplete="Published"
                         className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                         value={published}
+                        onChange={({target}) => setPublished(target.value)}
                     />
                     </div>
                 </div>

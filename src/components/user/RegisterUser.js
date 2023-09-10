@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function RegisterUSer(){
+    const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -22,15 +23,8 @@ function RegisterUSer(){
                 lastname,
                 password,
             });
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user_create) {
-                    // Redirige al usuario a la página de inicio después del registro exitoso
-                    // o a cualquier otra página que desees.
-                    return (
-                        <Link to="/">Redireccionando a la página de inicio...</Link>
-                    );
-                }
+            if (response.status >= 200 && response.status < 300) {
+                navigate("/");
             }
         }
         catch (error){

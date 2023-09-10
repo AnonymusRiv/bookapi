@@ -1,6 +1,25 @@
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"
 
 function Home(){
+    const [isLogged, setIsLogged] = useState(false);
+
+    const checkLogin = async () => {
+        try {
+            const response = await axios.post("http://localhost:8000/api/book/isuser/", {});
+            if (response.status >= 200 && response.status < 300) {
+                setIsLogged(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
+    useEffect(() => {
+        checkLogin();
+    }, []);
+
     return(
         <div className="bg-white">  
         <div className="relative isolate px-6 pt-14 lg:px-8">
@@ -22,6 +41,7 @@ function Home(){
                 <p className="mt-6 text-lg leading-8 text-gray-600">
                     The first library of the Aula Software Libre for lends books.
                 </p>
+                {isLogged ?
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                     <Link
                     to="/signin"
@@ -33,6 +53,7 @@ function Home(){
                     Register <span aria-hidden="true"></span>
                     </Link>
                 </div>
+                : <></>}
                 </div>
             </div>
             <div
