@@ -16,12 +16,12 @@ function SignUser(){
                 username,
                 password,
             });
-            if (response.status >= 200 && response.status < 300) {
+            if (response.status === 200 && response.data.user_signin) {
                 navigate("/");
             }
         }
-        catch (error){
-            console.log(error)
+        catch (error) {
+            console.error("Error al iniciar sesión:", error.response.data);
         }
     };
 

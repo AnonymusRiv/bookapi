@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom"
 
 function Home(){
@@ -7,21 +7,25 @@ function Home(){
 
     const checkLogin = async () => {
         try {
-            const response = await axios.post("http://localhost:8000/api/book/isuser/", {});
-            if (response.status >= 200 && response.status < 300) {
+            const response = await axios.get("http://localhost:8000/api/book/isuser/", {});
+            if (response.data && response.data["no user"] === "no user found") {
+                setIsLogged(false);
+            }
+            else {
                 setIsLogged(true);
             }
+            console.log(response.data);
         } catch (error) {
             console.log(error);
         }
     };
-    
+
     useEffect(() => {
         checkLogin();
     }, []);
 
     return(
-        <div className="bg-white">  
+        <div className="bg-white">
         <div className="relative isolate px-6 pt-14 lg:px-8">
             <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -31,7 +35,7 @@ function Home(){
                     alt="ASL"
                 />
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    
+
                 </h2>
                 </div>
                 <div className="text-center">
@@ -42,18 +46,22 @@ function Home(){
                     The first library of the Aula Software Libre for lends books.
                 </p>
                 {isLogged ?
-                <div className="mt-10 flex items-center justify-center gap-x-6">
-                    <Link
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+                <Link
                     to="/signin"
                     className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                    Sign In
-                    </Link>
-                    <Link to="/register" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Register <span aria-hidden="true"></span>
-                    </Link>
-                </div>
-                : <></>}
+                >
+                Sign In
+                </Link>
+                <Link
+                    to="/register"
+                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                Register <span aria-hidden="true"></span>
+                </Link>
+            </div>
+            : <></>
+            }
                 </div>
             </div>
             <div
@@ -69,6 +77,7 @@ function Home(){
                 />
             </div>
         </div>
+        {console.log(isLogged)}
         </div>
     )
 }

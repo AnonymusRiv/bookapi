@@ -1,8 +1,9 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Menu, Popover, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import { NavLink } from 'react-router-dom'
+import axios from "axios";
 
 {/*
 const user = {
@@ -13,11 +14,6 @@ const user = {
 }
 */}
 
-const navigation = [
-    { name: 'About', href: '/about', current: false },
-    { name: 'Contact', href: '/contact', current: false },
-    { name: 'Sign In', href: '/signin', current: false },
-]
 {/*const userNavigation = [
     { name: 'Your Profile', href: '#' },
     { name: 'Settings', href: '#' },
@@ -39,6 +35,53 @@ function Navbar(){
   //SEARCH
   const [effectSearch, setEffectSearch] = useState(false);
   const [term, setTerm] = useState('')
+
+  const [isLogged, setIsLogged] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/book/logout/", {});
+      if (response.status == 200) {
+        setIsLogged(false);
+      }
+      else{
+        setIsLogged(true);
+      }
+  } catch (error) {
+      console.log(error);
+  }
+  };
+
+  const navigation = [
+    { name: 'About', href: '/about', current: false },
+    { name: 'Contact', href: '/contact', current: false },
+    { name: 'Sign In', href: '/signin', current: false },
+]
+
+const navigation_user = [
+  { name: 'About', href: '/about', current: false },
+  { name: 'Contact', href: '/contact', current: false },
+  { name: 'Log Out', href: '/', current: false, onClick: {handleLogout} },
+]
+
+
+  const checkLogin = async () => {
+      try {
+          const response = await axios.get("http://localhost:8000/api/book/isuser/", {});
+          if (response.status == 200) {
+            setIsLogged(true);
+          }
+          else{
+            setIsLogged(false);
+          }
+      } catch (error) {
+          console.log(error);
+      }
+  };
+
+  useEffect(() => {
+      checkLogin();
+  }, []);
 
   const handleChange = e =>{
     setTerm(e.target.value)
@@ -113,7 +156,6 @@ function Navbar(){
                 </div>
 
                 <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                  
                   {/*<a
                     href="#"
                     className="ml-5 flex-shrink-0 bg-white rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -156,7 +198,7 @@ function Navbar(){
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                  
+
                   <NavLink to="/about" className="mx-4 text-lg dark:hover:text-white hover:text-gray-900 text-gray-600 dark:text-dark-txt text-md font-semibold">
                         About
                   </NavLink>
@@ -164,9 +206,15 @@ function Navbar(){
                         Contact
                   </NavLink>
 
+                  {isLogged ?
                   <NavLink to="/signin" className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Sign In
                   </NavLink>
+                  :
+                  <NavLink to="/" onClick={handleLogout} className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Log Out
+                  </NavLink>
+                  }
 
                 </div>
               </div>
@@ -209,7 +257,7 @@ function Navbar(){
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                {navigation.map((item) => (
+                {isLogged ? navigation.map((item) => (
                   <NavLink
                     key={item.name}
                     to={item.href}
@@ -221,7 +269,21 @@ function Navbar(){
                   >
                     {item.name}
                   </NavLink>
-                ))}
+                ))
+              :
+              navigation_user.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  aria-current={item.current ? 'page' : undefined}
+                  className={classNames(
+                    item.current ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50',
+                    'block rounded-md py-2 px-3 text-base font-medium'
+                  )}
+                >
+                  {item.name}
+                </NavLink>
+              ))}
               </div>
             {/* <div className="border-t border-gray-200 pt-4 pb-3">
                 <div className="max-w-3xl mx-auto px-4 flex items-center sm:px-6">

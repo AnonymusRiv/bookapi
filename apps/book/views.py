@@ -82,7 +82,7 @@ class AddBook(APIView):
 class RegisterUser(APIView):
     def post(self, request, format=None):
         body = json.loads(request.body)
-        
+
         email = body.get('email')
         username = body.get('username')
         first_name = body.get('firstname')
@@ -91,17 +91,17 @@ class RegisterUser(APIView):
 
         if not email or not username or not password:
             return Response({'error': 'Email, username, and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Verificar si el correo electrónico ya está en uso
         if User.objects.filter(email=email).exists():
             return Response({'error': 'Email is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Crear el usuario
         try:
             user = User.objects.create_user(email=email, username=username, first_name=first_name, last_name=last_name, password=password)
         except IntegrityError:
             return Response({'error': 'Username is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if user is not None:
             # Autenticar al usuario
             auth_user = authenticate(username=username, password=password)
@@ -123,13 +123,24 @@ class SignInUser(APIView):
         auth_user = authenticate(username=username, password=password)
         if auth_user:
             login(request, auth_user)
-            return Response({'user_signin': auth_user.id}, status=status.HTTP_200_OK)
+            print(username)
+            return Response({'user_signin': auth_user.id, 'username': auth_user.username}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class IsUser(APIView):
-    def post(self, request, format=None):
+    def get(self, request, format=None):
         if request.user.is_authenticated:
+            print("---------------------------")
             return Response({'user': request.user.id}, status=status.HTTP_200_OK)
         else:
-            return Response({'no user': 'no user founud'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'no user': 'no user founud'}, status=status.HTTP_200_OK)
+
+class LogOut(APIView):
+    def post(self, request, format=None):
+        if request.user.is_authenticated:
+            if logout(request):
+                print(request.user)
+                return Response({'user_logout': 'user logout correctly'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'no user': 'no user founud'}, status=status.HTTP_202_ACCEPTED)

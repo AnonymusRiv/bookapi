@@ -43,8 +43,6 @@ function BookPost({get_book, post}){
             :
             <LoadingCard/>
             }
-            
-            
         </FullWidthLayout>
     )
 }
