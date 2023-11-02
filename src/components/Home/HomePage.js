@@ -1,28 +1,32 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom"
+import { AuthContext } from "../../App";
 
 function Home(){
-    const [isLogged, setIsLogged] = useState(false);
 
-    const checkLogin = async () => {
-        try {
-            const response = await axios.get("http://localhost:8000/api/book/isuser/", {});
-            if (response.data && response.data["no user"] === "no user found") {
-                setIsLogged(false);
-            }
-            else {
-                setIsLogged(true);
-            }
-            console.log(response.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    const { isLogged, setIsLogged, username, setUsername } = useContext(AuthContext);
+    //const checkLogin = async () => {
+    //    try {
+    //        const response = await axios.get("http://localhost:8000/api/book/isuser/", {});
+    //        if (response.data && response.data["no user"] === "no user found") {
+    //            setIsLogged(false);
+    //        }
+    //        else {
+    //            setIsLogged(true);
+    //        }
+    //        console.log(response.data);
+    //    } catch (error) {
+    //        console.log(error);
+    //    }
+    //};
 
-    useEffect(() => {
-        checkLogin();
-    }, []);
+    //useEffect(() => {
+    //    if (location.state && location.state.username) {
+    //        setUsername(location.state.username);
+    //        setIsLogged(true);
+    //    }
+    //}, [location.state]);
 
     return(
         <div className="bg-white">
@@ -45,23 +49,23 @@ function Home(){
                 <p className="mt-6 text-lg leading-8 text-gray-600">
                     The first library of the Aula Software Libre for lends books.
                 </p>
-                {isLogged ?
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Link
-                    to="/signin"
-                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                Sign In
-                </Link>
-                <Link
-                    to="/register"
-                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                Register <span aria-hidden="true"></span>
-                </Link>
-            </div>
-            : <></>
-            }
+                {!isLogged ? (
+                <div className="mt-10 flex items-center justify-center gap-x-6">
+                    <Link
+                        to="/signin"
+                        className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        Sign In
+                    </Link>
+                    <Link
+                        to="/register"
+                        className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        Register <span aria-hidden="true"></span>
+                    </Link>
+                </div>
+                ) : null}
+
                 </div>
             </div>
             <div

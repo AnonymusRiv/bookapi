@@ -36,7 +36,7 @@ function AddABook({get_categories, categories}){
         const file = event.dataTransfer.files[0];
         if (file) {
             setThumbnail(file)
-    
+
             const reader = new FileReader();
             reader.onload = () => {
             setThumbnailPreview(reader.result);
@@ -52,7 +52,7 @@ function AddABook({get_categories, categories}){
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         try{
             const response = await axios.post("http://localhost:8000/api/book/addbook/", {
                 title,

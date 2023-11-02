@@ -1,9 +1,10 @@
-import { Fragment, useState, useEffect } from 'react'
+import { useContext, Fragment, useState, useEffect } from 'react'
 import { Menu, Popover, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import axios from "axios";
+import { AuthContext } from "../../App";
 
 {/*
 const user = {
@@ -23,6 +24,11 @@ const user = {
 const books = [
   { name: 'View Books', href: '/book'},
   { name: 'View Categories', href: '/book/categories'},
+]
+
+const books_user = [
+  { name: 'View Books', href: '/book'},
+  { name: 'View Categories', href: '/book/categories'},
   { name: 'Add Book', href: '/addbook'},
 ]
 
@@ -36,52 +42,26 @@ function Navbar(){
   const [effectSearch, setEffectSearch] = useState(false);
   const [term, setTerm] = useState('')
 
-  const [isLogged, setIsLogged] = useState(false);
+  const { isLogged, setIsLogged, username, setUsername } = useContext(AuthContext);
+
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
+    console.log("Logging out...");
     try {
-      const response = await axios.post("http://localhost:8000/api/book/logout/", {});
-      if (response.status == 200) {
-        setIsLogged(false);
-      }
-      else{
-        setIsLogged(true);
-      }
-  } catch (error) {
-      console.log(error);
-  }
+      setUsername("");
+      setIsLogged(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
+  ;
 
   const navigation = [
     { name: 'About', href: '/about', current: false },
     { name: 'Contact', href: '/contact', current: false },
-    { name: 'Sign In', href: '/signin', current: false },
 ]
-
-const navigation_user = [
-  { name: 'About', href: '/about', current: false },
-  { name: 'Contact', href: '/contact', current: false },
-  { name: 'Log Out', href: '/', current: false, onClick: {handleLogout} },
-]
-
-
-  const checkLogin = async () => {
-      try {
-          const response = await axios.get("http://localhost:8000/api/book/isuser/", {});
-          if (response.status == 200) {
-            setIsLogged(true);
-          }
-          else{
-            setIsLogged(false);
-          }
-      } catch (error) {
-          console.log(error);
-      }
-  };
-
-  useEffect(() => {
-      checkLogin();
-  }, []);
 
   const handleChange = e =>{
     setTerm(e.target.value)
@@ -180,7 +160,7 @@ const navigation_user = [
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="origin-top-right absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none">
-                        {books.map((item) => (
+                        {isLogged ? books_user.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <NavLink
@@ -194,7 +174,23 @@ const navigation_user = [
                               </NavLink>
                             )}
                           </Menu.Item>
-                        ))}
+                        ))
+                      :
+                      books.map((item) => (
+                        <Menu.Item key={item.name}>
+                          {({ active }) => (
+                            <NavLink
+                              to={item.href}
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block py-2 px-4 text-sm text-gray-700'
+                              )}
+                            >
+                              {item.name}
+                            </NavLink>
+                          )}
+                        </Menu.Item>
+                      ))}
                       </Menu.Items>
                     </Transition>
                   </Menu>
@@ -206,15 +202,15 @@ const navigation_user = [
                         Contact
                   </NavLink>
 
-                  {isLogged ?
-                  <NavLink to="/signin" className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Sign In
-                  </NavLink>
-                  :
-                  <NavLink to="/" onClick={handleLogout} className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Log Out
-                  </NavLink>
-                  }
+                  {isLogged ? (
+                    <NavLink to="/" onClick={handleLogout} className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Log Out
+                    </NavLink>
+                  ) : (
+                    <NavLink to="/signin" className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Sign In
+                    </NavLink>
+                  )}
 
                 </div>
               </div>
@@ -239,7 +235,7 @@ const navigation_user = [
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className='block py-2 px-4 text-sm text-gray-700'>
-                        {books.map((item) => (
+                        {isLogged ? books_user.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <NavLink
@@ -253,25 +249,27 @@ const navigation_user = [
                               </NavLink>
                             )}
                           </Menu.Item>
-                        ))}
+                        ))
+                      :
+                      books.map((item) => (
+                        <Menu.Item key={item.name}>
+                          {({ active }) => (
+                            <NavLink
+                              to={item.href}
+                              className={classNames(
+                                item.current ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50',
+                                'block rounded-md py-2 px-3 text-base font-medium'
+                              )}
+                            >
+                              {item.name}
+                            </NavLink>
+                          )}
+                        </Menu.Item>
+                      ))}
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                {isLogged ? navigation.map((item) => (
-                  <NavLink
-                    key={item.name}
-                    to={item.href}
-                    aria-current={item.current ? 'page' : undefined}
-                    className={classNames(
-                      item.current ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50',
-                      'block rounded-md py-2 px-3 text-base font-medium'
-                    )}
-                  >
-                    {item.name}
-                  </NavLink>
-                ))
-              :
-              navigation_user.map((item) => (
+                  {navigation.map((item) => (
                 <NavLink
                   key={item.name}
                   to={item.href}
@@ -284,6 +282,16 @@ const navigation_user = [
                   {item.name}
                 </NavLink>
               ))}
+
+                  {isLogged ? (
+                    <NavLink to="/" onClick={handleLogout} className="ml-1 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Log Out
+                    </NavLink>
+                  ) : (
+                    <NavLink to="/signin" className="ml-1 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Sign In
+                    </NavLink>
+                  )}
               </div>
             {/* <div className="border-t border-gray-200 pt-4 pb-3">
                 <div className="max-w-3xl mx-auto px-4 flex items-center sm:px-6">
@@ -322,4 +330,4 @@ const navigation_user = [
     )
 }
 
-export default Navbar
+export default Navbar;

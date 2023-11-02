@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
+import { AuthContext } from "../../App";
 
 function SignUser(){
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState("");
+    const { setIsLogged, username, setUsername } = useContext(AuthContext);
     const [password, setPassword] = useState("");
 
     const handleSubmit = async (event) =>{
@@ -17,6 +18,7 @@ function SignUser(){
                 password,
             });
             if (response.status === 200 && response.data.user_signin) {
+                setIsLogged(true);
                 navigate("/");
             }
         }
@@ -38,7 +40,7 @@ function SignUser(){
                     Sign in to your account
                 </h2>
                 </div>
-        
+
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
                     <div>
@@ -58,7 +60,7 @@ function SignUser(){
                         />
                     </div>
                     </div>
-        
+
                     <div>
                     <div className="flex items-center justify-between">
                         <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
@@ -83,7 +85,7 @@ function SignUser(){
                         />
                     </div>
                     </div>
-        
+
                     <div>
                     <button
                         type="submit"
@@ -93,7 +95,7 @@ function SignUser(){
                     </button>
                     </div>
                 </form>
-        
+
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Not a member?{' '}
                     <Link to="/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
@@ -105,6 +107,6 @@ function SignUser(){
             </>
         )
     }
-    
+
 
 export default SignUser;

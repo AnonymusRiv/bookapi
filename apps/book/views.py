@@ -23,7 +23,7 @@ class BookListView(APIView):
         if Post.postobjects.all().exists():
 
             posts = Post.postobjects.all()
-            
+
             paginator = SmallSetPagination()
             results = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(results, many=True)
@@ -32,7 +32,6 @@ class BookListView(APIView):
 
         else:
             return Response({'error': 'No posts found'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
 class BookListCategoryView(APIView):
     def get(self, request, category_id, format=None):
         if Post.postobjects.all().exists():
@@ -40,7 +39,7 @@ class BookListCategoryView(APIView):
             category = Category.objects.get(id = category_id)
 
             posts = Post.postobjects.all().filter(category=category)
-            
+
             paginator = SmallSetPagination()
             results = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(results, many=True)

@@ -20,7 +20,7 @@ function BookList({
                         <div className="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-3 lg:max-w-none">
                             {
                                 book_list.map(post=>(
-                                    <BookCard data={post}/>
+                                    <BookCard key={post.id} data={post} />
                                 ))
                             }
                         </div>
