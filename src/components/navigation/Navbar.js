@@ -56,7 +56,6 @@ function Navbar(){
       console.error("Logout error:", error);
     }
   };
-  ;
 
   const navigation = [
     { name: 'About', href: '/about', current: false },

@@ -3,7 +3,7 @@ import LoadingCard from "components/loaders/LoadingCard"
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { get_categories } from "redux/actions/categories"
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function AddABook({get_categories, categories}){
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -13,6 +13,7 @@ function AddABook({get_categories, categories}){
     const [category, setCategory] = useState("");
     const [published, setPublished] = useState("");
     const [thumbnail, setThumbnail] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() =>{
         get_categories()
@@ -26,6 +27,7 @@ function AddABook({get_categories, categories}){
             const reader = new FileReader();
             reader.onload = () => {
                 setThumbnailPreview(reader.result);
+                setThumbnail(reader.result);
             };
             reader.readAsDataURL(file);
         }
@@ -58,19 +60,16 @@ function AddABook({get_categories, categories}){
                 title,
                 description,
                 author,
-                category,
+                category: parseInt(category),
                 published,
-                thumbnail,
+                thumbnailPreview,
             });
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user_create) {
-                    // Redirige al usuario a la página de inicio después del registro exitoso
-                    // o a cualquier otra página que desees.
-                    return (
-                        <Link to="/">Redireccionando a la página de inicio...</Link>
-                    );
-                }
+            if (response.status === 201) {
+                // Manejar la respuesta exitosa, si es necesario
+                console.log("Book added successfully");
+                navigate("/book");
+            } else {
+                console.error("Failed to add book");
             }
         }
         catch (error){
@@ -136,7 +135,7 @@ function AddABook({get_categories, categories}){
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <div className="text-center">
-                        {thumbnailPreview ? (
+                        {thumbnail ? (
                             <>
                                 <img src={thumbnailPreview} alt="Thumbnail Preview" className="h-40 mx-auto mb-4" />
                                 <div className="flex mt-4 space-x-2">
@@ -222,16 +221,17 @@ function AddABook({get_categories, categories}){
                         required
                         autoComplete="category-name"
                         className="flex-grow rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 mr-2"
+                        value={category}
+                        onChange={({ target }) => setCategory(target.value)}
                     >
-                        <option value="" className="text-gray-900">Select a category</option>
+                        <option value="" className="text-gray-900">
+                            Select a category
+                        </option>
                         {categories ? categories.map(category => (
-                            <option key={category.id} value={category.id} onChange={({target}) => setCategory(target.value)}>
+                            <option key={category.id} value={category.id}>
                                 {category.name}
                             </option>
-                        ))
-                        :
-                        <LoadingCard/>
-                        }
+                        )) : <LoadingCard />}
                     </select>
                     <button
                         type="button"

@@ -19,13 +19,13 @@ class Post(models.Model):
 
     book_uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, max_length=255)
     thumbnail = models.ImageField(upload_to=book_directory_path)
     description = models.TextField()
     author = models.CharField(max_length=255)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     published = models.DateField()
-    status = models.CharField(max_length=10, choices=options, default='draft')
+    status = models.CharField(max_length=10, choices=options, default='published')
 
     objects = models.Manager()
     postobjects = PostObjects()

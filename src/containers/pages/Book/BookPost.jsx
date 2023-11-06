@@ -1,17 +1,36 @@
 import LoadingCard from "components/loaders/LoadingCard";
 import FullWidthLayout from "hocs/layouts/FullWidthLayout";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { get_book } from "redux/actions/book";
+import { AuthContext } from "../../../App";
 
 function BookPost({get_book, post}){
     const params = useParams()
     const slug = params.slug
-
+    const { isLogged, username } = useContext(AuthContext);
+    const thumbnail = post ? `http://localhost:8000${post.thumbnail}` : null;
+    
     useEffect(()=>{
         get_book(slug)
     },[])
+
+    const handleReserve = async () => {
+        try {
+            console.log("Reservado");
+            //const response = await axios.get("http://localhost:8000/api/book/reserve/", {});
+            //if (response.data && response.data["no user"] === "no user found") {
+            //    setIsLogged(false); 
+            //}
+            //else {
+            //    setIsLogged(true);
+            //}
+            //console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return(
         <FullWidthLayout>
@@ -20,6 +39,15 @@ function BookPost({get_book, post}){
                 <div className="relative py-16 bg-white overflow-hidden">
                 <div className="relative px-4 sm:px-6 lg:px-8">
                     <div className="text-lg max-w-prose mx-auto">
+                    <figure>
+                        <img
+                            className="w-full rounded-lg"
+                            src={thumbnail}
+                            alt=""
+                            width={1310}
+                            height={873}
+                        />
+                    </figure>
                     <h1>
                         <span className="block text-base text-center text-indigo-600 font-semibold tracking-wide uppercase">
                         {post.category.name}
@@ -36,6 +64,12 @@ function BookPost({get_book, post}){
                     <p>
                         {post.description}
                     </p>
+                    {isLogged ? (
+                    <Link to="/reserve" onClick={handleReserve} className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Reserve
+                    </Link>
+                    ) : 
+                    null}
 
                     </div>
                 </div>

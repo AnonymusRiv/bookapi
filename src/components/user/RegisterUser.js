@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../App";
 
 function RegisterUSer(){
     const navigate = useNavigate();
+    const { setIsLogged, username, setUsername } = useContext(AuthContext);
 
-    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
@@ -24,6 +25,7 @@ function RegisterUSer(){
                 password,
             });
             if (response.status >= 200 && response.status < 300) {
+                setIsLogged(true);
                 navigate("/");
             }
         }

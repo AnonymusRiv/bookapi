@@ -7,9 +7,10 @@ from rest_framework import status, permissions
 
 from django.db.models.query_utils import Q
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 
-from django.contrib.auth import authenticate
+
 from django.db import IntegrityError
 
 from .models import Post
@@ -71,12 +72,33 @@ class SearchBookView(APIView):
 
 class AddBook(APIView):
     def post(self, request, format=None):
-        serializer = PostSerializer(data = request.data)
-        print(serializer)
-        """if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)"""
+        body = json.loads(request.body)
+
+        title = body.get('title')
+        description = body.get('description')
+        author = body.get('author')
+        category_id = body.get('category')
+        published = body.get('published')
+        thumbnail = body.get('thumbnail')
+
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response({'error': 'Invalid category'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            Post.objects.create(
+                title = title,
+                slug = title,
+                thumbnail = thumbnail,
+                description = description,
+                author = author,
+                category = category,
+                published = published,
+            )
+            return Response({'post': 'Post created successfully'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterUser(APIView):
     def post(self, request, format=None):
@@ -126,14 +148,6 @@ class SignInUser(APIView):
             return Response({'user_signin': auth_user.id, 'username': auth_user.username}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-class IsUser(APIView):
-    def get(self, request, format=None):
-        if request.user.is_authenticated:
-            print("---------------------------")
-            return Response({'user': request.user.id}, status=status.HTTP_200_OK)
-        else:
-            return Response({'no user': 'no user founud'}, status=status.HTTP_200_OK)
 
 class LogOut(APIView):
     def post(self, request, format=None):

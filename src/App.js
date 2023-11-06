@@ -3,7 +3,8 @@ import Home from "containers/pages/Home";
 import store from "store";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Routes }from 'react-router-dom'
-import React, { createContext, useState } from "react";
+import { createContext, useState } from "react";
+import { Helmet } from "react-helmet";
 import Book from "containers/pages/Book/Book";
 import BookPost from "containers/pages/Book/BookPost";
 import BookCategory from "containers/pages/Book/category/BookCategory";
@@ -13,6 +14,7 @@ import SignInForm from "containers/pages/User/SignInForm";
 import RegisterForm from "containers/pages/User/RegisterForm";
 import BookListCategories from "containers/pages/Book/category/BookListCategories";
 import Contact from "containers/pages/Contact";
+import About from "containers/pages/About";
 
 export const AuthContext = createContext();
 
@@ -23,6 +25,10 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
+      <Helmet>
+          <title>Bookapi</title>
+          <link rel="icon" href="https://www.uco.es/aulasoftwarelibre/wp-content/uploads/2018/09/logo-cuadrado-transparente-invertido-1.png" />
+        </Helmet>
         <AuthContext.Provider value={{ isLogged, setIsLogged, username, setUsername }}>
           <Routes>
             {/* Error Display */}
@@ -38,7 +44,10 @@ function App() {
 
             <Route path="/search/:term" element={<Search/>}/>
 
+            { isLogged ?
             <Route path="/addbook" element={<AddBook/>}/>
+            : null}
+            {/*<Route path="/reserve" element={<Reserve/>}/>*/}
 
             <Route path="/signin" element={<SignInForm/>}/>
             <Route path="/register" element={<RegisterForm/>}/>
@@ -46,7 +55,7 @@ function App() {
             {/*<Route path="/dashboard/:user_id" element={<Dashboard/>}/>*/}
 
             <Route path="/contact" element={<Contact/>}/>
-            {/*<Route path="/about" element={<About/>}/>*/}
+            <Route path="/about" element={<About/>}/>
 
           </Routes>
         </AuthContext.Provider>

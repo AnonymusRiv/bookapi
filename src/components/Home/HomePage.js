@@ -6,27 +6,6 @@ import { AuthContext } from "../../App";
 function Home(){
 
     const { isLogged, setIsLogged, username, setUsername } = useContext(AuthContext);
-    //const checkLogin = async () => {
-    //    try {
-    //        const response = await axios.get("http://localhost:8000/api/book/isuser/", {});
-    //        if (response.data && response.data["no user"] === "no user found") {
-    //            setIsLogged(false);
-    //        }
-    //        else {
-    //            setIsLogged(true);
-    //        }
-    //        console.log(response.data);
-    //    } catch (error) {
-    //        console.log(error);
-    //    }
-    //};
-
-    //useEffect(() => {
-    //    if (location.state && location.state.username) {
-    //        setUsername(location.state.username);
-    //        setIsLogged(true);
-    //    }
-    //}, [location.state]);
 
     return(
         <div className="bg-white">
