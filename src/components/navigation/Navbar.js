@@ -42,7 +42,7 @@ function Navbar(){
   const [effectSearch, setEffectSearch] = useState(false);
   const [term, setTerm] = useState('')
 
-  const { isLogged, setIsLogged, username, setUsername } = useContext(AuthContext);
+  const { isLogged, setIsLogged, username, setUsername, superUser, setsuperUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -51,6 +51,7 @@ function Navbar(){
     try {
       setUsername("");
       setIsLogged(false);
+      setsuperUser(false);
       navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
@@ -159,7 +160,7 @@ function Navbar(){
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="origin-top-right absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none">
-                        {isLogged ? books_user.map((item) => (
+                        {superUser ? books_user.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <NavLink
@@ -234,7 +235,7 @@ function Navbar(){
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className='block py-2 px-4 text-sm text-gray-700'>
-                        {isLogged ? books_user.map((item) => (
+                        {superUser ? books_user.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <NavLink

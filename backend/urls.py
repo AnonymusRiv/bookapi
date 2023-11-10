@@ -24,6 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/book/", include('apps.book.urls')),
     path("api/category/", include('apps.category.urls')),
+    path("api/lend/", include('apps.lends.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [re_path(r'^,*',

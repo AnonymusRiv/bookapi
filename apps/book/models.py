@@ -25,6 +25,7 @@ class Post(models.Model):
     author = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     published = models.DateField()
+    available = models.BooleanField(default=True)
     status = models.CharField(max_length=10, choices=options, default='published')
 
     objects = models.Manager()

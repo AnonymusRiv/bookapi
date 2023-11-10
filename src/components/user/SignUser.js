@@ -6,7 +6,7 @@ import { AuthContext } from "../../App";
 function SignUser(){
     const navigate = useNavigate();
 
-    const { setIsLogged, username, setUsername } = useContext(AuthContext);
+    const { setIsLogged, username, setUsername, setSuperUser } = useContext(AuthContext);
     const [password, setPassword] = useState("");
 
     const handleSubmit = async (event) =>{
@@ -19,6 +19,7 @@ function SignUser(){
             });
             if (response.status === 200 && response.data.user_signin) {
                 setIsLogged(true);
+                setSuperUser(response.data.is_superuser)
                 navigate("/");
             }
         }

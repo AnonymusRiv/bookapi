@@ -5,28 +5,34 @@ import { connect } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { get_book } from "redux/actions/book";
 import { AuthContext } from "../../../App";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function BookPost({get_book, post}){
     const params = useParams()
     const slug = params.slug
     const { isLogged, username } = useContext(AuthContext);
+    const navigate = useNavigate();
     const thumbnail = post ? `http://localhost:8000${post.thumbnail}` : null;
     
     useEffect(()=>{
         get_book(slug)
     },[])
 
-    const handleReserve = async () => {
+    const handleReserve = async (event) => {
+        event.preventDefault()
+        const uuid = post.book_uuid;
+
+
         try {
-            console.log("Reservado");
-            //const response = await axios.get("http://localhost:8000/api/book/reserve/", {});
-            //if (response.data && response.data["no user"] === "no user found") {
-            //    setIsLogged(false); 
-            //}
-            //else {
-            //    setIsLogged(true);
-            //}
-            //console.log(response.data);
+            const response = await axios.post("http://localhost:8000/api/lend/addlend/", {
+                username,
+                uuid,
+            });
+            if (response.status === 201){
+                console.log("Book lend successfully");
+                navigate("/book");
+            }
         } catch (error) {
             console.log(error);
         }
@@ -65,9 +71,15 @@ function BookPost({get_book, post}){
                         {post.description}
                     </p>
                     {isLogged ? (
-                    <Link to="/reserve" onClick={handleReserve} className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Reserve
-                    </Link>
+                        post.available ? (
+                            <Link to="/reserve" onClick={handleReserve} className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Reserve
+                            </Link>
+                        ) : 
+                        <span className="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Not Available
+                        </span>
+
                     ) : 
                     null}
 

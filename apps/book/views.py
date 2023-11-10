@@ -8,7 +8,6 @@ from rest_framework import status, permissions
 from django.db.models.query_utils import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 
 
 from django.db import IntegrityError
@@ -100,6 +99,53 @@ class AddBook(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class ModifyBook(APIView):
+    def post(self, request, format=None):
+        body = json.loads(request.body)
+
+        title = body.get('title')
+        description = body.get('description')
+        author = body.get('author')
+        category_id = body.get('category')
+        published = body.get('published')
+        thumbnail = body.get('thumbnail')
+
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response({'error': 'Invalid category'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            Post.objects.update(
+                title = title,
+                slug = title,
+                thumbnail = thumbnail,
+                description = description,
+                author = author,
+                category = category,
+                published = published,
+            )
+            return Response({'post': 'Post created successfully'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class DeleteBook(APIView):
+    def post(self, request, format=None):
+        body = json.loads(request.body)
+
+        book_uuid = body.get('book_uuid')
+
+        try:
+            Post.objects.delete(
+                book_uuid = book_uuid,
+            )
+            return Response({'post': 'Post delete successfuly'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class RegisterUser(APIView):
     def post(self, request, format=None):
         body = json.loads(request.body)
@@ -144,8 +190,7 @@ class SignInUser(APIView):
         auth_user = authenticate(username=username, password=password)
         if auth_user:
             login(request, auth_user)
-            print(username)
-            return Response({'user_signin': auth_user.id, 'username': auth_user.username}, status=status.HTTP_200_OK)
+            return Response({'user_signin': auth_user.id, 'username': auth_user.username, 'is_superuser': auth_user.is_superuser}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -157,3 +202,53 @@ class LogOut(APIView):
                 return Response({'user_logout': 'user logout correctly'}, status=status.HTTP_200_OK)
         else:
             return Response({'no user': 'no user founud'}, status=status.HTTP_202_ACCEPTED)
+"""
+class ModifyUser():
+    def post(self, request, format=None):
+        body = json.loads(request.body)
+
+        email = body.get('email')
+        username = body.get('username')
+        first_name = body.get('firstname')
+        last_name = body.get('lastname')
+        password = body.get('password')
+
+        # Verificar si el correo electrónico ya está en uso
+        if User.objects.filter(email=email).exists:
+            # Modifica el usuario
+            try:
+                user = User.objects.update(email=email, username=username, first_name=first_name, last_name=last_name, password=password)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+            if user is not None:
+                # Autenticar al usuario
+                auth_user = authenticate(username=username, password=password)
+                if auth_user:
+                    login(request, auth_user)
+                    return Response({'user_create': auth_user.id}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'error': 'Authentication failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({'error': 'Failed to create user.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response({'error': 'Email failed.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteUser():
+    def post(self, request, format=None):
+        body = json.loads(request.body)
+
+        email = body.get('email')
+
+        try:
+
+
+
+class ShowProfile():
+    def post(self, request, format=None):
+
+
+class ModifyProfile():
+    def post(self, request, format=None):
+"""
